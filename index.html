@@ -42,7 +42,8 @@
 
         .show-more-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; padding: 12px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; margin-bottom: 30px; text-align: center; }
         
-        .result-box { margin-top: 12px; padding: 10px; border-radius: 8px; background: #f1f5f9; border: 1px dashed #cbd5e1; color: #0f172a; font-size: 0.85rem; text-align: left; word-break: break-all; }
+        .result-box { margin-top: 12px; padding: 12px; border-radius: 8px; background: #f1f5f9; border: 1px dashed #cbd5e1; color: #0f172a; font-size: 0.85rem; text-align: left; word-break: break-all; }
+        .result-box a { color: #2563eb; font-weight: 600; text-decoration: underline; word-break: break-all; display: inline-block; margin-top: 6px; }
     </style>
 </head>
 <body>
@@ -78,7 +79,7 @@
         </div>
         <div class="card" onclick="openTool('video')">
             <div class="card-icon">🎥</div>
-            <div class="card-title">AI Video Generator</div>
+            <div class="card-title">AI Video & Voiceover</div>
         </div>
         <div class="card" onclick="openTool('transcript')">
             <div class="card-icon">📝</div>
@@ -116,7 +117,7 @@
         if (type === 'voice') {
             title.innerHTML = `🎙️ AI Voice Generator <button class="close-btn" onclick="closePanel()">✕</button>`;
             content.innerHTML = `
-                <label>Text to Speech:</label>
+                <label>Text to Speech (Only Audio):</label>
                 <textarea id="voiceText" rows="3" placeholder="Yahan text likhein..."></textarea>
                 <label>Language:</label>
                 <select id="voiceLang">
@@ -131,15 +132,27 @@
                     <option value="Arabic">Arabic (العربية)</option>
                     <option value="Bengali">Bengali (বাংলা)</option>
                 </select>
-                <button class="btn-primary" onclick="generateVoice()">Generate Voice</button>
+                <button class="btn-primary" onclick="generateVoice()">Generate Voice (Audio MP3)</button>
                 <div id="voiceResult" class="result-box" style="display:none;"></div>
             `;
         } else if (type === 'video') {
-            title.innerHTML = `🎥 AI Video Generator <button class="close-btn" onclick="closePanel()">✕</button>`;
+            title.innerHTML = `🎥 AI Video & Voiceover <button class="close-btn" onclick="closePanel()">✕</button>`;
             content.innerHTML = `
-                <label>Video Prompt:</label>
-                <textarea id="videoPrompt" rows="3" placeholder="Describe your video..."></textarea>
-                <button class="btn-primary" onclick="generateVideo()">Generate Video</button>
+                <label>Video Prompt / Scene Description:</label>
+                <textarea id="videoPrompt" rows="3" placeholder="Describe your video scene..."></textarea>
+                
+                <label>Voiceover Script (Optional Audio Speech for Video):</label>
+                <textarea id="videoVoiceText" rows="2" placeholder="Video ke saath bolne wala dialogue / script (optional)..."></textarea>
+                
+                <label>Voiceover Language:</label>
+                <select id="videoLang">
+                    <option value="Hindi">Hindi (हिंदी)</option>
+                    <option value="English">English</option>
+                    <option value="Bhojpuri">Bhojpuri</option>
+                    <option value="Spanish">Spanish</option>
+                </select>
+                
+                <button class="btn-primary" onclick="generateVideoWithAudio()">Generate Video + Voiceover</button>
                 <div id="videoResult" class="result-box" style="display:none;"></div>
             `;
         } else if (type === 'transcript') {
@@ -154,10 +167,6 @@
                     <option value="Bhojpuri">Bhojpuri</option>
                     <option value="Spanish">Spanish</option>
                     <option value="French">French</option>
-                    <option value="German">German</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Arabic">Arabic</option>
                 </select>
                 <button class="btn-primary" onclick="generateTranscript()">Translate & Transcribe</button>
                 <div id="transcriptResult" class="result-box" style="display:none;"></div>
@@ -183,30 +192,45 @@
         const resBox = document.getElementById("voiceResult");
         if(!text) return alert("Kripya text enter karein!");
         resBox.style.display = "block";
-        resBox.innerText = "Processing (Render Server waking up, please wait)...";
+        resBox.innerText = "Generating Audio...";
 
         try {
             const res = await fetch(`${BACKEND_URL}/api/generate-voice?text=${encodeURIComponent(text)}&lang=${encodeURIComponent(lang)}`, { method: "POST" });
             const data = await res.json();
             if (!res.ok) throw new Error(parseError(data.detail));
-            resBox.innerText = `Success: ${data.message} | Audio URL: ${data.audio_url}`;
+            resBox.innerHTML = `✅ Audio Generated Successfully!<br><a href="${data.audio_url}" target="_blank">🎵 Click here to Play/Download Audio (MP3)</a>`;
         } catch (err) {
             resBox.innerText = `❌ ${err.message}`;
         }
     }
 
-    async function generateVideo() {
+    async function generateVideoWithAudio() {
         const prompt = document.getElementById("videoPrompt").value;
+        const voiceText = document.getElementById("videoVoiceText").value;
+        const lang = document.getElementById("videoLang").value;
         const resBox = document.getElementById("videoResult");
-        if(!prompt) return alert("Kripya prompt enter karein!");
+        if(!prompt) return alert("Kripya video prompt enter karein!");
+        
         resBox.style.display = "block";
-        resBox.innerText = "Generating Video...";
+        resBox.innerText = "Generating Video & Audio Voiceover...";
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/generate-video?prompt=${encodeURIComponent(prompt)}&lang=Hindi`, { method: "POST" });
-            const data = await res.json();
-            if (!res.ok) throw new Error(parseError(data.detail));
-            resBox.innerText = `Success: ${data.message} | Status: ${data.status_url}`;
+            // Video call
+            const videoRes = await fetch(`${BACKEND_URL}/api/generate-video?prompt=${encodeURIComponent(prompt)}&lang=${encodeURIComponent(lang)}`, { method: "POST" });
+            const videoData = await videoRes.json();
+            if (!videoRes.ok) throw new Error(parseError(videoData.detail));
+
+            let audioLinkHtml = "";
+            // Audio call if script provided
+            if (voiceText.trim() !== "") {
+                const audioRes = await fetch(`${BACKEND_URL}/api/generate-voice?text=${encodeURIComponent(voiceText)}&lang=${encodeURIComponent(lang)}`, { method: "POST" });
+                const audioData = await audioRes.json();
+                if (audioRes.ok && audioData.audio_url) {
+                    audioLinkHtml = `<br><a href="${audioData.audio_url}" target="_blank">🎙️ Click here for Voiceover Audio (MP3)</a>`;
+                }
+            }
+
+            resBox.innerHTML = `✅ ${videoData.message}<br><a href="${videoData.status_url}" target="_blank">🎬 Click here to Check Video Status</a>${audioLinkHtml}`;
         } catch (err) {
             resBox.innerText = `❌ ${err.message}`;
         }
@@ -224,7 +248,7 @@
             const res = await fetch(`${BACKEND_URL}/api/transcript?text=${encodeURIComponent(text)}&target_lang=${encodeURIComponent(targetLang)}`, { method: "POST" });
             const data = await res.json();
             if (!res.ok) throw new Error(parseError(data.detail));
-            resBox.innerText = `Message: ${data.message} | Translation: ${data.translated_text}`;
+            resBox.innerHTML = `✅ ${data.message}<br><strong>Translation:</strong> ${data.translated_text}`;
         } catch (err) {
             resBox.innerText = `❌ ${err.message}`;
         }
@@ -240,7 +264,7 @@
             const res = await fetch(`${BACKEND_URL}/api/download-item?item_name=${encodeURIComponent(itemName)}`, { method: "POST" });
             const data = await res.json();
             if (!res.ok) throw new Error(parseError(data.detail));
-            resBox.innerText = `✅ ${data.message} | Remaining today: ${data.remaining_downloads}`;
+            resBox.innerHTML = `✅ ${data.message}<br>Remaining downloads today: <strong>${data.remaining_downloads}</strong>`;
         } catch (err) {
             resBox.innerText = `❌ ${err.message}`;
         }
