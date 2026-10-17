@@ -3,159 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiran-AI - Free AI Studio</title>
+    <title>Kiran-AI Studio: Create & Design</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0f172a; color: #f8fafc; padding: 20px; line-height: 1.6; }
-        .container { max-width: 900px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 40px; }
-        h1 { color: #38bdf8; font-size: 2.5rem; margin-bottom: 10px; }
-        p.subtitle { color: #94a3b8; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: #f8fafc; color: #0f172a; padding: 16px; line-height: 1.5; }
+        .container { max-width: 600px; margin: 0 auto; }
         
-        .card { background: #1e293b; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .card h2 { color: #f43f5e; font-size: 1.4rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 8px 0; }
+        .logo-area { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.25rem; color: #0f172a; }
+        .logo-badge { background: #0f172a; color: #fff; padding: 4px 8px; border-radius: 6px; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #334155; }
+
+        /* Hero Text */
+        .hero { text-align: center; margin-bottom: 24px; }
+        .hero h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+        .hero p { color: #64748b; font-size: 0.95rem; }
+
+        /* Grid Cards */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card:hover { border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .card-icon { font-size: 2rem; margin-bottom: 12px; }
+        .card-title { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
+
+        /* Action Panel Modal */
+        .panel { display: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        .panel h3 { font-size: 1.1rem; margin-bottom: 16px; color: #0f172a; display: flex; justify-content: space-between; align-items: center; }
+        .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b; }
+
+        label { display: block; margin-bottom: 6px; color: #475569; font-size: 0.85rem; font-weight: 600; text-align: left; }
+        input, select, textarea { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; margin-bottom: 14px; font-size: 0.95rem; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #2563eb; background: #fff; }
+
+        .btn-primary { background: #0f172a; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.2s; }
+        .btn-primary:hover { background: #1e293b; }
+
+        .show-more-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; padding: 12px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; margin-bottom: 30px; text-align: center; }
         
-        label { display: block; margin-bottom: 8px; color: #cbd5e1; font-weight: 500; }
-        input, select, textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; margin-bottom: 16px; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
-        
-        button { background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; }
-        button:hover { background: #1d4ed8; }
-        
-        .result-box { margin-top: 16px; padding: 12px; border-radius: 8px; background: #0f172a; border: 1px dashed #475569; color: #38bdf8; font-size: 0.95rem; word-break: break-all; }
+        .result-box { margin-top: 12px; padding: 10px; border-radius: 8px; background: #f1f5f9; border: 1px dashed #cbd5e1; color: #0f172a; font-size: 0.85rem; text-align: left; word-break: break-all; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- Header -->
     <header>
-        <h1>Kiran-AI Studio</h1>
-        <p class="subtitle">AI Voice, Video, Transcript & Digital Downloads</p>
+        <div class="logo-area">
+            <span class="logo-badge">K</span> Kiran-AI
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">N</div>
+        </div>
     </header>
 
-    <!-- 1. AI Voice Generation -->
-    <div class="card">
-        <h2>🎙️ AI Voice Generator (Limit: 5/day)</h2>
-        <label>Text to Speech:</label>
-        <textarea id="voiceText" rows="3" placeholder="Yahan apna text likhein..."></textarea>
-        <label>Language:</label>
-        <select id="voiceLang">
-            <option value="Hindi">Hindi</option>
-            <option value="English">English</option>
-        </select>
-        <button onclick="generateVoice()">Generate Voice</button>
-        <div id="voiceResult" class="result-box" style="display:none;"></div>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Kiran-AI Studio: Create & Design</h1>
+        <p>Magically turn ideas into content. Edit, convert, and create with pro AI tools!</p>
     </div>
 
-    <!-- 2. AI Video Generation -->
-    <div class="card">
-        <h2>🎥 AI Video Generator (Limit: 3/day)</h2>
-        <label>Video Prompt:</label>
-        <textarea id="videoPrompt" rows="3" placeholder="Describe the video you want to generate..."></textarea>
-        <button onclick="generateVideo()">Generate Video</button>
-        <div id="videoResult" class="result-box" style="display:none;"></div>
+    <!-- Active Tool Panel -->
+    <div id="toolPanel" class="panel">
+        <h3 id="panelTitle">Tool Name <button class="close-btn" onclick="closePanel()">✕</button></h3>
+        <div id="panelContent"></div>
     </div>
 
-    <!-- 3. AI Transcription & Translation -->
-    <div class="card">
-        <h2>📝 AI Transcript & Translation (Limit: 5/day)</h2>
-        <label>Text / Transcript Data:</label>
-        <textarea id="transcriptText" rows="3" placeholder="Enter text to translate or transcribe..."></textarea>
-        <label>Target Language:</label>
-        <input type="text" id="targetLang" value="Hindi" placeholder="e.g. Hindi, English, Spanish">
-        <button onclick="generateTranscript()">Translate & Transcribe</button>
-        <div id="transcriptResult" class="result-box" style="display:none;"></div>
+    <!-- Grid Menu Options -->
+    <div class="grid">
+        <div class="card" onclick="openTool('voice')">
+            <div class="card-icon">🎙️</div>
+            <div class="card-title">AI Voice Generator</div>
+        </div>
+        <div class="card" onclick="openTool('video')">
+            <div class="card-icon">🎥</div>
+            <div class="card-title">AI Video Generator</div>
+        </div>
+        <div class="card" onclick="openTool('transcript')">
+            <div class="card-icon">📝</div>
+            <div class="card-title">Transcript & Translate</div>
+        </div>
+        <div class="card" onclick="openTool('download')">
+            <div class="card-icon">📁</div>
+            <div class="card-title">Digital Store Assets</div>
+        </div>
     </div>
 
-    <!-- 4. Digital Store Download -->
-    <div class="card">
-        <h2>📁 Digital Store Downloads (Limit: 2/day)</h2>
-        <label>Select Template / Asset:</label>
-        <select id="itemName">
-            <option value="AI Music Preset Pack">AI Music Preset Pack</option>
-            <option value="FutureBass Hub Template">FutureBass Hub Template</option>
-            <option value="Video Editing Asset">Video Editing Asset</option>
-        </select>
-        <button onclick="downloadItem()">Download Resource</button>
-        <div id="downloadResult" class="result-box" style="display:none;"></div>
-    </div>
+    <button class="show-more-btn">Show more pro tools</button>
 </div>
 
 <script>
     const BACKEND_URL = "https://kiran-ai-ntzk.onrender.com";
 
-    // 1. Voice Call
+    function parseError(detail) {
+        if (typeof detail === "string") return detail;
+        if (Array.isArray(detail)) return detail.map(err => err.msg || JSON.stringify(err)).join(", ");
+        if (typeof detail === "object" && detail !== null) return detail.msg || JSON.stringify(detail);
+        return "Unknown Error Occurred";
+    }
+
+    function closePanel() {
+        document.getElementById("toolPanel").style.display = "none";
+    }
+
+    function openTool(type) {
+        const panel = document.getElementById("toolPanel");
+        const title = document.getElementById("panelTitle");
+        const content = document.getElementById("panelContent");
+        panel.style.display = "block";
+
+        if (type === 'voice') {
+            title.innerHTML = `🎙️ AI Voice Generator <button class="close-btn" onclick="closePanel()">✕</button>`;
+            content.innerHTML = `
+                <label>Text to Speech:</label>
+                <textarea id="voiceText" rows="3" placeholder="Yahan text likhein..."></textarea>
+                <label>Language:</label>
+                <select id="voiceLang">
+                    <option value="Hindi">Hindi (हिंदी)</option>
+                    <option value="English">English</option>
+                    <option value="Bhojpuri">Bhojpuri</option>
+                    <option value="Spanish">Spanish (Español)</option>
+                    <option value="French">French (Français)</option>
+                    <option value="German">German (Deutsch)</option>
+                    <option value="Japanese">Japanese (日本語)</option>
+                    <option value="Chinese">Chinese (中文)</option>
+                    <option value="Arabic">Arabic (العربية)</option>
+                    <option value="Bengali">Bengali (বাংলা)</option>
+                </select>
+                <button class="btn-primary" onclick="generateVoice()">Generate Voice</button>
+                <div id="voiceResult" class="result-box" style="display:none;"></div>
+            `;
+        } else if (type === 'video') {
+            title.innerHTML = `🎥 AI Video Generator <button class="close-btn" onclick="closePanel()">✕</button>`;
+            content.innerHTML = `
+                <label>Video Prompt:</label>
+                <textarea id="videoPrompt" rows="3" placeholder="Describe your video..."></textarea>
+                <button class="btn-primary" onclick="generateVideo()">Generate Video</button>
+                <div id="videoResult" class="result-box" style="display:none;"></div>
+            `;
+        } else if (type === 'transcript') {
+            title.innerHTML = `📝 Transcript & Translate <button class="close-btn" onclick="closePanel()">✕</button>`;
+            content.innerHTML = `
+                <label>Text Data:</label>
+                <textarea id="transcriptText" rows="3" placeholder="Enter text to translate..."></textarea>
+                <label>Target Language:</label>
+                <select id="targetLang">
+                    <option value="Hindi">Hindi (हिंदी)</option>
+                    <option value="English">English</option>
+                    <option value="Bhojpuri">Bhojpuri</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="French">French</option>
+                    <option value="German">German</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Arabic">Arabic</option>
+                </select>
+                <button class="btn-primary" onclick="generateTranscript()">Translate & Transcribe</button>
+                <div id="transcriptResult" class="result-box" style="display:none;"></div>
+            `;
+        } else if (type === 'download') {
+            title.innerHTML = `📁 Digital Store Download <button class="close-btn" onclick="closePanel()">✕</button>`;
+            content.innerHTML = `
+                <label>Select Asset:</label>
+                <select id="itemName">
+                    <option value="AI Music Preset Pack">AI Music Preset Pack</option>
+                    <option value="FutureBass Hub Template">FutureBass Hub Template</option>
+                    <option value="Video Editing Asset">Video Editing Asset</option>
+                </select>
+                <button class="btn-primary" onclick="downloadItem()">Download Resource</button>
+                <div id="downloadResult" class="result-box" style="display:none;"></div>
+            `;
+        }
+    }
+
     async function generateVoice() {
         const text = document.getElementById("voiceText").value;
         const lang = document.getElementById("voiceLang").value;
         const resBox = document.getElementById("voiceResult");
-        
         if(!text) return alert("Kripya text enter karein!");
         resBox.style.display = "block";
-        resBox.innerText = "Processing...";
+        resBox.innerText = "Processing (Render Server waking up, please wait)...";
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/generate-voice`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text, lang })
-            });
+            const res = await fetch(`${BACKEND_URL}/api/generate-voice?text=${encodeURIComponent(text)}&lang=${encodeURIComponent(lang)}`, { method: "POST" });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Error occurred");
+            if (!res.ok) throw new Error(parseError(data.detail));
             resBox.innerText = `Success: ${data.message} | Audio URL: ${data.audio_url}`;
         } catch (err) {
             resBox.innerText = `❌ ${err.message}`;
         }
     }
 
-    // 2. Video Call
     async function generateVideo() {
         const prompt = document.getElementById("videoPrompt").value;
         const resBox = document.getElementById("videoResult");
-        
         if(!prompt) return alert("Kripya prompt enter karein!");
         resBox.style.display = "block";
         resBox.innerText = "Generating Video...";
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/generate-video`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt, lang: "Hindi" })
-            });
+            const res = await fetch(`${BACKEND_URL}/api/generate-video?prompt=${encodeURIComponent(prompt)}&lang=Hindi`, { method: "POST" });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Error occurred");
+            if (!res.ok) throw new Error(parseError(data.detail));
             resBox.innerText = `Success: ${data.message} | Status: ${data.status_url}`;
         } catch (err) {
             resBox.innerText = `❌ ${err.message}`;
         }
     }
 
-    // 3. Transcript / Translation Call
     async function generateTranscript() {
         const text = document.getElementById("transcriptText").value;
         const targetLang = document.getElementById("targetLang").value;
         const resBox = document.getElementById("transcriptResult");
-
         if(!text) return alert("Kripya text enter karein!");
         resBox.style.display = "block";
         resBox.innerText = "Translating...";
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/transcript`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text, target_lang: targetLang })
-            });
+            const res = await fetch(`${BACKEND_URL}/api/transcript?text=${encodeURIComponent(text)}&target_lang=${encodeURIComponent(targetLang)}`, { method: "POST" });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Error occurred");
+            if (!res.ok) throw new Error(parseError(data.detail));
             resBox.innerText = `Message: ${data.message} | Translation: ${data.translated_text}`;
         } catch (err) {
             resBox.innerText = `❌ ${err.message}`;
         }
     }
 
-    // 4. Download Call
     async function downloadItem() {
         const itemName = document.getElementById("itemName").value;
         const resBox = document.getElementById("downloadResult");
@@ -163,13 +237,9 @@
         resBox.innerText = "Checking limit...";
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/download-item`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ item_name: itemName })
-            });
+            const res = await fetch(`${BACKEND_URL}/api/download-item?item_name=${encodeURIComponent(itemName)}`, { method: "POST" });
             const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Error occurred");
+            if (!res.ok) throw new Error(parseError(data.detail));
             resBox.innerText = `✅ ${data.message} | Remaining today: ${data.remaining_downloads}`;
         } catch (err) {
             resBox.innerText = `❌ ${err.message}`;
