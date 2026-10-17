@@ -8,7 +8,7 @@ from datetime import date
 
 # Rate limiter setup (IP-based tracking)
 limiter = Limiter(key_func=get_remote_address)
-app = FastAPI(title="NKG AI Studio Global Backend", version="2.0")
+app = FastAPI(title="Kiran-AI Studio Global Backend", version="2.0")
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -27,16 +27,16 @@ store_downloads = defaultdict(lambda: {"date": None, "count": 0})
 
 @app.get("/")
 def home():
-    return {"status": "NKG AI & Digital Store Backend is running live securely!"}
+    return {"status": "Kiran-AI Studio & Digital Store Backend is running live securely!"}
 
-# 1. AI Voice Generation API (Max 5 per day)
+# 1. AI Voice Generation API (Limit increased to 5000 chars)
 @app.post("/api/generate-voice")
 @limiter.limit("5/day")
 async def generate_voice(request: Request, text: str, lang: str):
-    if len(text) > 350:
+    if len(text) > 5000:
         raise HTTPException(
             status_code=400, 
-            detail="Text is too long! Free tier limit is max 350 characters."
+            detail="Text is too long! Limit is max 5000 characters."
         )
     return {
         "success": True,
@@ -44,14 +44,14 @@ async def generate_voice(request: Request, text: str, lang: str):
         "audio_url": "https://example.com/generated-audio.mp3"
     }
 
-# 2. AI Video Generation API (Max 3 per day)
+# 2. AI Video Generation API (Limit increased to 5000 chars for documentaries)
 @app.post("/api/generate-video")
 @limiter.limit("3/day")
 async def generate_video(request: Request, prompt: str, lang: str):
-    if len(prompt) > 200:
+    if len(prompt) > 5000:
         raise HTTPException(
             status_code=400, 
-            detail="Prompt is too long!"
+            detail="Prompt is too long! Limit is max 5000 characters."
         )
     return {
         "success": True,
